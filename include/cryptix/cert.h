@@ -12,6 +12,10 @@ namespace Cryptix {
 class Cert {
 public:
     ~Cert();
+    Cert(Cert&) = delete;
+    Cert& operator=(Cert&) = delete;
+    Cert(Cert&&);
+    Cert& operator=(Cert&&);
 
     static std::optional<Cert> FromPemText(std::string_view pemText);
     static std::optional<Cert> FromPemFile(std::filesystem::path pemFile);

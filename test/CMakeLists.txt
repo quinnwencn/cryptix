@@ -3,7 +3,7 @@ file(GLOB_RECURSE TEST_SOURCES CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DsIR}/src/*.h"
 )
 
-find_package(gtest REQUIRED)
+find_package(GTest REQUIRED)
 
 add_executable(cryptix_test ${TEST_SOURCES})
 target_include_directories(cryptix_test PRIVATE 
@@ -26,13 +26,13 @@ execute_process(COMMAND openssl genpkey -algorithm RSA -out mock/rsa_root.key -p
                 OUTPUT_QUIET
 )
 
-execute_process(COMMAND openssl req -new -x509 -key mock/rsa_root.key -out mock/root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com"
+execute_process(COMMAND openssl req -new -x509 -key mock/rsa_root.key -out mock/root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com" -provider default -provider legacy
                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
                 OUTPUT_VARIABLE ROOT_CERT
                 OUTPUT_QUIET
 )
 
 target_compile_definitions(cryptix_test PRIVATE
-    ROOT_PEM="${ROOT_CERT}"
+    ROOT_PEM="${CMAKE_CURRENT_SOURCE_DIR}/mock/root.pem"
     ROOT_DER="${CMAKE_CURRENT_SOURCE_DIR}/mock/root.der"
 )
