@@ -2,11 +2,12 @@ from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
 
 class Cryptix(ConanFile):
-    name = "Cryptix"
+    name = "cryptix"
     version = "0.1.0"
     description = "Cryptix is a C++ cryptography library."
     settings = "os", "compiler", "build_type", "arch"
     generator = "CMakeDeps"
+    exports_sources = "CMakeLists.txt", "include/*", "src/*"
 
     default_options = {
         "openssl/*:shared": True,
@@ -37,11 +38,12 @@ class Cryptix(ConanFile):
         cmake.configure()
         cmake.build()
 
-    # not supported yet
-    def test(self):
-        if not self.in_local_cache:
-            return
+    def package(self):
         cmake = CMake(self)
-        cmake.test()
-        cmake.build()
-        cmake.test()
+        cmake.install()
+
+
+    def package_info(self):
+        self.cpp_info.libs = ["cryptix"]
+        self.cpp_info.includedirs = ["include"]
+        self.cpp_info.set_property("cmake_target_name", "cryptix::cryptix")

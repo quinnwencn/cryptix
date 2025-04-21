@@ -12,5 +12,21 @@ find_package(OpenSSL REQUIRED)
 find_package(fmt REQUIRED)
 
 add_subdirectory(src)
-# only add when tests are enabled
-add_subdirectory(test)
+
+add_library(cryptix SHARED
+    $<TARGET_OBJECTS:cert>
+)
+target_link_libraries(cryptix PUBLIC
+    ${OpenSSL_LIBRARIES}
+    ${fmt_LIBRARIES}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+install(TARGETS cryptix
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include DESTINATION include FILES_MATCHING PATTERN "*.h")

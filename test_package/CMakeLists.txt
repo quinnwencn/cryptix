@@ -4,14 +4,16 @@ file(GLOB_RECURSE TEST_SOURCES CMAKE_CONFIGURE_DEPENDS
 )
 
 find_package(GTest REQUIRED)
+find_package(cryptix REQUIRED)
 
 add_executable(cryptix_test ${TEST_SOURCES})
 target_include_directories(cryptix_test PRIVATE 
     "${CMAKE_SOURCE_DIR}/include"
-    ${GTest_INCLUDE_DIRS})
+    ${GTest_INCLUDE_DIRS}
+    ${cryptix_INCLUDE_DIRS})
 target_link_libraries(cryptix_test PRIVATE
     ${GTest_LIBRARIES}
-    cryptix
+    cryptix::cryptix
 )
 
 # prepare test sources
@@ -36,3 +38,6 @@ target_compile_definitions(cryptix_test PRIVATE
     ROOT_PEM="${CMAKE_CURRENT_SOURCE_DIR}/mock/root.pem"
     ROOT_DER="${CMAKE_CURRENT_SOURCE_DIR}/mock/root.der"
 )
+
+enable_testing()
+add_test(NAME cryptix_test COMMAND cryptix_test)
