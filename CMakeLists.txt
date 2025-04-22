@@ -14,7 +14,9 @@ find_package(fmt REQUIRED)
 add_subdirectory(src)
 
 add_library(cryptix SHARED
-    $<TARGET_OBJECTS:cert>
+    $<TARGET_OBJECTS:crypto>
+    $<TARGET_OBJECTS:random>
+    $<TARGET_OBJECTS:utils>
 )
 target_link_libraries(cryptix PUBLIC
     ${OpenSSL_LIBRARIES}
