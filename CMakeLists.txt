@@ -29,4 +29,4 @@ install(TARGETS cryptix
     RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY include/cryptix DESTINATION include FILES_MATCHING PATTERN "*.h")

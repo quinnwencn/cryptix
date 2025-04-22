@@ -1,3 +1,9 @@
+cmake_minimum_required(VERSION 3.15)
+project(cryptix_test LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 file(GLOB_RECURSE TEST_SOURCES CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
     "${CMAKE_CURRENT_SOURCE_DsIR}/src/*.h"
@@ -5,6 +11,7 @@ file(GLOB_RECURSE TEST_SOURCES CMAKE_CONFIGURE_DEPENDS
 
 find_package(GTest REQUIRED)
 find_package(cryptix REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 add_executable(cryptix_test ${TEST_SOURCES})
 target_include_directories(cryptix_test PRIVATE 
@@ -13,6 +20,7 @@ target_include_directories(cryptix_test PRIVATE
     ${cryptix_INCLUDE_DIRS})
 target_link_libraries(cryptix_test PRIVATE
     ${GTest_LIBRARIES}
+    ${OpenSSL_LIBRARIES}
     cryptix::cryptix
 )
 
@@ -28,7 +36,7 @@ execute_process(COMMAND openssl genpkey -algorithm RSA -out mock/rsa_root.key -p
                 OUTPUT_QUIET
 )
 
-execute_process(COMMAND openssl req -new -x509 -key mock/rsa_root.key -out mock/root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com" -provider default -provider legacy
+execute_process(COMMAND openssl req -new -x509 -key mock/rsa_root.key -out mock/root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com"
                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
                 OUTPUT_VARIABLE ROOT_CERT
                 OUTPUT_QUIET

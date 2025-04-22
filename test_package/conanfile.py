@@ -3,8 +3,8 @@ from conan.tools.cmake import CMake, cmake_layout
 
 
 class TestPackage(ConanFile):
-    setttings = "os", "compiler", "build_type", "arch"
-    generators = "CMakeDeps", "CMakeToolChain"
+    settings = "os", "compiler", "build_type", "arch"
+    generators = "CMakeDeps", "CMakeToolchain"
 
     def requirements(self):
         self.requires("cryptix/0.1.0")
