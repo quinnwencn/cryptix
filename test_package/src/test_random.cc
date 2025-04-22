@@ -26,7 +26,7 @@ TEST(RandomGenTest, RandomnessTest) {
 
         auto vec = res.value();
         int zeroCount = std::count(vec.begin(), vec.end(), 0);
-        int maxCount = std::count(vec.begin() vec.end(), UINT8_MAX);
+        int maxCount = std::count(vec.begin(), vec.end(), UINT8_MAX);
         EXPECT_TRUE(zeroCount < testSize / 2);
         EXPECT_TRUE(maxCount < testSize / 2);
 
