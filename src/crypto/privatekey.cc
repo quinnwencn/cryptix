@@ -5,6 +5,16 @@
 
 namespace Cryptix {
 
+PrivateKey& PrivateKey::operator=(PrivateKey&& key) {
+    if (this == &key) {
+        return *this;
+    }
+
+    key_ = std::move(key.key_);
+    key.key_ =nullptr;
+    return *this;
+}
+
 std::optional<PrivateKey> PrivateKey::FromKeyFile(const std::filesystem::path& keyPath) {
     if (std::filesystem::exists(keyPath) == false) {
         return std::nullopt;
@@ -41,6 +51,18 @@ std::optional<std::vector<uint8_t>> PrivateKey::Sign(const std::vector<uint8_t>&
         return std::nullopt;
     }
 
+    return Sign(data.data(), data.size(), algo);
+}
+
+std::optional<std::vector<uint8_t>> PrivateKey::Sign(const std::string& data, SignAlgo algo) {
+    if (data.empty()) {
+        return std::nullopt;
+    }
+
+    return Sign(reinterpret_cast<const uint8_t*>(data.c_str()), data.size(), algo);
+}
+
+std::optional<std::vector<uint8_t>> PrivateKey::Sign(const uint8_t* data, size_t size, SignAlgo algo) {
     if (key_ == nullptr) {
         return std::nullopt;
     }

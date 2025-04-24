@@ -29,22 +29,36 @@ execute_process(COMMAND mkdir -p mock
                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-# generate a self-signed certificate
-execute_process(COMMAND openssl genpkey -algorithm RSA -out mock/rsa_root.key -pkeyopt rsa_keygen_bits:2048
-                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-                OUTPUT_VARIABLE RSA_PRIVATE_KEY
-                OUTPUT_QUIET
-)
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root.key)
+    # generate a self-signed certificate
+    execute_process(COMMAND openssl genpkey -algorithm RSA -out rsa_root.key -pkeyopt rsa_keygen_bits:2048
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock"
+                    OUTPUT_VARIABLE RSA_PRIVATE_KEY
+                    OUTPUT_QUIET
+    )
+endif()
 
-execute_process(COMMAND openssl req -new -x509 -key mock/rsa_root.key -out mock/root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com"
-                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-                OUTPUT_VARIABLE ROOT_CERT
-                OUTPUT_QUIET
-)
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root_pub.key)
+    execute_process(COMMAND openssl pkey -in rsa_root.key -pubout -out rsa_root_pub.key
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock"
+                    OUTPUT_VARIABLE RSA_PRIVATE_KEY
+                    OUTPUT_QUIET
+    )
+endif()
+
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mock/root.pem)
+    execute_process(COMMAND openssl req -new -x509 -key rsa_root.key -out root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+endif()
 
 target_compile_definitions(cryptix_test PRIVATE
     ROOT_PEM="${CMAKE_CURRENT_SOURCE_DIR}/mock/root.pem"
     ROOT_DER="${CMAKE_CURRENT_SOURCE_DIR}/mock/root.der"
+    ROOT_PRIV_KEY="${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root.key"
+    ROOT_PUB_KEY="${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root_pub.key"
 )
 
 enable_testing()
