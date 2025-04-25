@@ -13,12 +13,14 @@ class Cryptix(ConanFile):
         "openssl/*:shared": True,
         "gtest/*:shared": True,
         "fmt/*:shared": True,
+        "cpputils/*:shared": True,
     }
 
     def requirements(self):
         self.requires("openssl/3.0.8")
         self.requires("gtest/1.13.0")
         self.requires("fmt/10.1.0")
+        self.requires("cpputils/0.1.0")
 
     def build_requirements(self):
         self.build_requires("cmake/3.26.4")

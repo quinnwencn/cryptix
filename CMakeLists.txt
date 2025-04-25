@@ -10,9 +10,9 @@ include("${CMAKE_CURRENT_BINARY_DIR}/generators/conan_toolchain.cmake")
 
 find_package(OpenSSL REQUIRED)
 find_package(fmt REQUIRED)
+find_package(cpputils REQUIRED) # install from here using conan: https://github.com/quinnwencn/cpputils.git
 
 add_subdirectory(src)
-add_subdirectory(third_party)
 
 add_library(cryptix SHARED
     $<TARGET_OBJECTS:crypto>
@@ -23,7 +23,7 @@ target_link_libraries(cryptix PUBLIC
     ${fmt_LIBRARIES}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-    cpputils
+    cpputils::cpputils
 )
 
 install(TARGETS cryptix
