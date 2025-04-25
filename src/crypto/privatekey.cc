@@ -1,7 +1,6 @@
 #include "cryptix/privatekey.h"
 
 #include <fstream>
-#include <openssl/pem.h>
 
 namespace Cryptix {
 
@@ -25,25 +24,16 @@ std::optional<PrivateKey> PrivateKey::FromKeyFile(const std::filesystem::path& k
         return std::nullopt;
     }
     std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-    return FromKeyContent(content);
+    return BaseKey::FromPrivateKeyContent(content);
 }
 
 std::optional<PrivateKey> PrivateKey::FromKeyContent(const std::string& keyContent) {
-    if (keyContent.empty()) {
+    auto key = BaseKey::FromPrivateKeyContent(keyContent);
+    if (!key.has_value()) {
         return std::nullopt;
     }
 
-    UniqueBio bio {::BIO_new_mem_buf(keyContent.data(), keyContent.length()), BIO_free};
-    if (bio == nullptr) {
-        return std::nullopt;
-    }
-
-    UniqueEvpKey key {::PEM_read_bio_PrivateKey(bio.get(), nullptr, nullptr, nullptr), EVP_PKEY_free};
-    if (key == nullptr) {
-        return std::nullopt;
-    }
-
-    return key;
+    return PrivateKey(std::move(key.value()));
 }
 
 std::optional<std::vector<uint8_t>> PrivateKey::Sign(const std::vector<uint8_t>& data, SignAlgo algo) {
@@ -86,8 +76,12 @@ std::optional<std::vector<uint8_t>> PrivateKey::Sign(const uint8_t* data, size_t
     }
     // do nothing for RSA PKCS_V1.5 padding mode
 
+    if (::EVP_DigestSignUpdate(mdCtx.get(), static_cast<const void*>(data), size) <= 0) {
+        return std::nullopt;
+    }
+
     size_t sigLen = 0;
-    if (EVP_DigestSignFinal(mdCtx.get(), nullptr, &sigLen) <= 0) {
+    if (::EVP_DigestSignFinal(mdCtx.get(), nullptr, &sigLen) <= 0) {
         return std::nullopt;
     }
 

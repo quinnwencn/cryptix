@@ -12,17 +12,18 @@ find_package(OpenSSL REQUIRED)
 find_package(fmt REQUIRED)
 
 add_subdirectory(src)
+add_subdirectory(third_party)
 
 add_library(cryptix SHARED
     $<TARGET_OBJECTS:crypto>
     $<TARGET_OBJECTS:random>
-    $<TARGET_OBJECTS:utils>
 )
 target_link_libraries(cryptix PUBLIC
     ${OpenSSL_LIBRARIES}
     ${fmt_LIBRARIES}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
+    cpputils
 )
 
 install(TARGETS cryptix

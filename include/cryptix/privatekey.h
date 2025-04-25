@@ -7,18 +7,19 @@
 
 #include "_common.h"
 #include "signalgorithm.h"
+#include "basekey.h"
 
 namespace Cryptix {
 
-class PrivateKey {
+class PrivateKey : public BaseKey {
 public:
     static std::optional<PrivateKey> FromKeyFile(const std::filesystem::path& keyPath);
     static std::optional<PrivateKey> FromKeyContent(const std::string& keyContent);
     
-    PrivateKey(UniqueEvpKey&& key) : key_(std::move(key)) {}
+    PrivateKey(UniqueEvpKey&& key) : BaseKey(std::move(key)) {}
     PrivateKey(PrivateKey&) = delete;
     PrivateKey& operator=(PrivateKey&) = delete;
-    PrivateKey(PrivateKey&& key): key_(std::move(key.key_)) {}
+    PrivateKey(PrivateKey&& key): BaseKey(std::move(key.key_)) {}
     PrivateKey& operator=(PrivateKey&& key);
 
     std::optional<std::vector<uint8_t>> Sign(const std::vector<uint8_t>& data, SignAlgo algo);
@@ -26,9 +27,6 @@ public:
 
 private:
     std::optional<std::vector<uint8_t>> Sign(const uint8_t* data, size_t size, SignAlgo algo);
-
-private:
-    UniqueEvpKey key_;
 };
 
 }
