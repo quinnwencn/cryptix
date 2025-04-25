@@ -4,7 +4,7 @@
 
 namespace Cryptix {
 
-std::optional<UniqueEvpKey> FromPublicKeyContent(const std::string& keyContent) {
+std::optional<UniqueEvpKey> BaseKey::FromPublicKeyContent(const std::string& keyContent) {
     if (keyContent.empty()) {
         return std::nullopt;
     }
@@ -22,7 +22,7 @@ std::optional<UniqueEvpKey> FromPublicKeyContent(const std::string& keyContent) 
     return key;
 }
 
-std::optional<UniqueEvpKey> FromPrivateKeyContent(const std::string& keyContent) {
+std::optional<UniqueEvpKey> BaseKey::FromPrivateKeyContent(const std::string& keyContent) {
     if (keyContent.empty()) {
         return std::nullopt;
     }
