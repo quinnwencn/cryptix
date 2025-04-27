@@ -36,18 +36,62 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root.key)
                     OUTPUT_VARIABLE RSA_PRIVATE_KEY
                     OUTPUT_QUIET
     )
-endif()
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root_pub.key)
+    execute_process(COMMAND openssl genpkey -algorithm RSA -out fake_rsa_root.key -pkeyopt rsa_keygen_bits:2048
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock"
+                    OUTPUT_VARIABLE RSA_PRIVATE_KEY
+                    OUTPUT_QUIET
+    )
+
     execute_process(COMMAND openssl pkey -in rsa_root.key -pubout -out rsa_root_pub.key
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock"
                     OUTPUT_VARIABLE RSA_PRIVATE_KEY
                     OUTPUT_QUIET
     )
-endif()
 
-if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mock/root.pem)
     execute_process(COMMAND openssl req -new -x509 -key rsa_root.key -out root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+
+    execute_process(COMMAND openssl req -new -x509 -key fake_rsa_root.key -out fake_root.pem -days 365 -subj "/C=CN/ST=Shanghai/L=Shanghai Jiading/O=My Company/CN=www.example.com"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+
+    execute_process(COMMAND openssl genpkey -algorithm RSA -out intermediate.key -pkeyopt rsa_keygen_bits:2048
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+
+    execute_process(COMMAND openssl req -new -key intermediate.key -out intermediate.csr -subj "/C=CN/ST=Shanghai/L=Shanghai/O=TestOu/CN=intermediate"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+
+    execute_process(COMMAND openssl x509 -req -in intermediate.csr -CA root.pem -CAkey rsa_root.key -CAcreateserial -out intermediate.crt -days 3650 -sha256
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+
+    execute_process(COMMAND openssl genpkey -algorithm RSA -out end.key -pkeyopt rsa_keygen_bits:2048
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+
+    execute_process(COMMAND openssl req -new -key end.key -out end.csr -subj "/C=CN/ST=Shanghai/L=Shanghai/O=TestOu/CN=end"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
+                    OUTPUT_VARIABLE ROOT_CERT
+                    OUTPUT_QUIET
+    )
+
+    execute_process(COMMAND openssl x509 -req -in end.csr -CA intermediate.crt -CAkey intermediate.key -CAcreateserial -out end.crt -days 3650 -sha256
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
                     OUTPUT_VARIABLE ROOT_CERT
                     OUTPUT_QUIET
