@@ -20,7 +20,7 @@ public:
     PrivateKey(PrivateKey&) = delete;
     PrivateKey& operator=(PrivateKey&) = delete;
     PrivateKey(PrivateKey&& key): BaseKey(std::move(key.key_)) {}
-    PrivateKey& operator=(const PrivateKey&& key);
+    PrivateKey& operator=(PrivateKey&& key);
 
     std::optional<std::vector<uint8_t>> Sign(const std::vector<uint8_t>& data, SignAlgo algo);
     std::optional<std::vector<uint8_t>> Sign(const std::string& data, SignAlgo algo);

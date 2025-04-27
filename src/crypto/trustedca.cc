@@ -2,20 +2,19 @@
 
 namespace Cryptix {
 
-std::optional<TrustedCa> TrustedCa::FromTrustedCACert(std::shared_ptr<Cert> trustedCaCert) {
-    if (trustedCaCert == nullptr) {
-        return std::nullopt;
-    }
-
+std::optional<TrustedCa> TrustedCa::FromTrustedCACert(Cert& trustedCaCert) {
     if (!trustedCaCert.IsCA()) {
         return std::nullopt;
     }
 
-    auto st = std::make_shared<::X509_STORE>(::X509_STORE_new(), ::X509_STORE_free);
+    std::shared_ptr<::X509_STORE> st (::X509_STORE_new(), ::X509_STORE_free);
     if (st == nullptr) {
         return std::nullopt;
     }
 
+    if (::X509_STORE_add_cert(st.get(), trustedCaCert.Get()) != 1) {
+        return std::nullopt;
+    }
     return TrustedCa(st);
 }
 
