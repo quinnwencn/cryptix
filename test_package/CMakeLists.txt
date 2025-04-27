@@ -73,7 +73,7 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root.key)
                     OUTPUT_QUIET
     )
 
-    execute_process(COMMAND openssl x509 -req -in intermediate.csr -CA root.pem -CAkey rsa_root.key -CAcreateserial -out intermediate.crt -days 3650 -sha256
+    execute_process(COMMAND openssl x509 -req -in intermediate.csr -CA root.pem -CAkey rsa_root.key -CAcreateserial -out intermediate.crt -days 3650 -sha256 -extfile "${CMAKE_CURRENT_SOURCE_DIR}/mock/intermediate.txt"
                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/mock/"
                     OUTPUT_VARIABLE ROOT_CERT
                     OUTPUT_QUIET
@@ -103,6 +103,10 @@ target_compile_definitions(cryptix_test PRIVATE
     ROOT_DER="${CMAKE_CURRENT_SOURCE_DIR}/mock/root.der"
     ROOT_PRIV_KEY="${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root.key"
     ROOT_PUB_KEY="${CMAKE_CURRENT_SOURCE_DIR}/mock/rsa_root_pub.key"
+    INTERMEDIA_CERT="${CMAKE_CURRENT_SOURCE_DIR}/mock/intermediate.crt"
+    END_CERT="${CMAKE_CURRENT_SOURCE_DIR}/mock/end.crt"
+    END_KEY="${CMAKE_CURRENT_SOURCE_DIR}/mock/end.key"
+    FAKE_ROOT_CERT="${CMAKE_CURRENT_SOURCE_DIR}/mock/fake_root.pem"
 )
 
 enable_testing()
