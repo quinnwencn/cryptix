@@ -27,6 +27,9 @@ public:
     Result ToPemText(std::string& pemText) const;
     Result ToDerText(std::string& derText) const;
 
+    bool IsCA() const { return true; } // TODO
+    X509* Get() { return cert_; }
+
 private:
     X509* cert_;
 
