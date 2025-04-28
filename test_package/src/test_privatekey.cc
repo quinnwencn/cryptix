@@ -1,9 +1,19 @@
 #include "cryptix/privatekey.h"
+#include "cpputils/string.h"
 
 #include <gtest/gtest.h>
 #include <fstream>
 
 using namespace Cryptix;
+
+class PrivateKeyTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        key_ = BaseKey::FromPrivateKeyContent(Utils::ReadFileContent(ROOT_PRIV_KEY));
+    }
+
+    UniqueEvpKey key_;
+};
 
 TEST(PrivateKeyTest, ConstructTest) {
     auto key = PrivateKey::FromKeyFile(ROOT_PRIV_KEY);
@@ -19,22 +29,29 @@ TEST(PrivateKeyTest, ConstructTest) {
     EXPECT_TRUE(key2.has_value());
 }
 
-TEST(PrivateKeyTest, EmptyDataSignTest) {
-    auto keyOpt = PrivateKey::FromKeyFile(ROOT_PRIV_KEY);
-    auto key = std::move(keyOpt.value());
-    std::vector<uint8_t> data {};
-    auto sig = key.Sign(data, SignAlgo::RSA_PKCS_V1_5);
-    EXPECT_FALSE(sig.has_value());
-
-    std::string strData {""};
-    sig = key.Sign(strData, SignAlgo::RSA_PKCS_V1_5);
-    EXPECT_FALSE(sig.has_value());
+TEST_F(PrivateKeyTest, HandlesEmptyData) {
+    PrivateKey key(key_);
+    EXPECT_EQ(key.Sign("", SignAlgo::RSA_PKCS_V1_5), std::nullopt);
 }
 
-TEST(PrivateKeyTest, ValidDataSignTest) {
-    auto keyOpt = PrivateKey::FromKeyFile(ROOT_PRIV_KEY);
-    auto key = std::move(keyOpt.value());
-    std::string strData {"hello, world!"};
-    auto sig = key.Sign(strData, SignAlgo::RSA_PKCS_V1_5);
+TEST_F(PrivateKeyTest, HandlesEmptyKey) {
+    PrivateKey key(nullptr);
+    EXPECT_EQ(key.Sign("test", SignAlgo::RSA_PKCS_V1_5), std::nullopt);
+}
+
+TEST_F(PrivateKeyTest, SignWithPkcs1V15) {
+    PrivateKey key(key_);
+    auto sig = key.Sign("test", SignAlgo::RSA_PKCS_V1_5);
     EXPECT_TRUE(sig.has_value());
+    EXPECT_FALSE(sig.value().empty());
 }
+
+TEST_F(PrivateKeyTest, SignWithRsaSsaPss) {
+    PrivateKey key(key_);
+    auto sig = key.Sign("test", SignAlgo::RSASSA_PSS);
+    EXPECT_TRUE(sig.has_value());
+    EXPECT_FALSE(sig.value().empty());
+}
+
+// TODO SignatureVerify
+
