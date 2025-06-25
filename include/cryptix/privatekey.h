@@ -17,8 +17,8 @@ public:
     static std::optional<PrivateKey> FromKeyContent(const std::string& keyContent);
     
     PrivateKey(UniqueEvpKey&& key) : BaseKey(std::move(key)) {}
-    PrivateKey(PrivateKey&) = delete;
-    PrivateKey& operator=(PrivateKey&) = delete;
+    PrivateKey(const PrivateKey&) = delete;
+    PrivateKey& operator=(const PrivateKey&) = delete;
     PrivateKey(PrivateKey&& key): BaseKey(std::move(key.key_)) {}
     PrivateKey& operator=(PrivateKey&& key);
 

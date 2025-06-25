@@ -30,7 +30,7 @@ TEST(RandomGenTest, RandomnessTest) {
         EXPECT_TRUE(zeroCount < testSize / 2);
         EXPECT_TRUE(maxCount < testSize / 2);
 
-        auto insertIter = uniqueStr.insert(Utils::ByteArr2HexStr(vec));
+        auto insertIter = uniqueStr.insert(Cpputils::ByteArr2HexStr(vec));
         EXPECT_TRUE(insertIter.second);
     }
 }

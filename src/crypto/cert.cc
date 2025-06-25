@@ -6,29 +6,6 @@
 
 namespace Cryptix {
 
-Cert::~Cert() {
-    if (cert_ != nullptr) {
-        ::X509_free(cert_);
-    }
-}
-
-Cert::Cert(Cert&& cert) {
-    cert_ = cert.cert_;
-    cert.cert_ = nullptr;
-}
-
-Cert& Cert::operator=(Cert&& cert) {
-    if (this != &cert) {
-        if (cert_ != nullptr) {
-            ::X509_free(cert_);
-        }
-        cert_ = cert.cert_;
-        cert.cert_ = nullptr;
-    }
-
-    return *this;
-}
-
 std::optional<Cert> Cert::FromPemText(std::string_view pemText){
     if (pemText.empty()) {
         fmt::print("{} is empty\n", pemText);
@@ -41,7 +18,7 @@ std::optional<Cert> Cert::FromPemText(std::string_view pemText){
         fmt::print("Failed to create BIO object.\n");
         return std::nullopt;
     }
-    X509* c = ::PEM_read_bio_X509(bio.get(), nullptr, nullptr, nullptr);
+    std::shared_ptr<X509> c(::PEM_read_bio_X509(bio.get(), nullptr, nullptr, nullptr), X509_free);
     if (c == nullptr) {
         fmt::print("Failed to read from BIO object.\n");
         return std::nullopt;
@@ -74,7 +51,9 @@ std::optional<Cert> Cert::FromDerText(std::string_view derText){
     }
 
     auto buffer = derText.data();
-    X509* c = ::d2i_X509(nullptr, reinterpret_cast<const unsigned char**>(&buffer), derText.size());
+    std::shared_ptr<X509> c(::d2i_X509(nullptr, reinterpret_cast<const unsigned char**>(&buffer),
+                            derText.size()),
+                            ::X509_free);
     if (c == nullptr) {
         fmt::print("Der2X509 failed.\n");
         return std::nullopt;
@@ -112,7 +91,7 @@ Result Cert::ToPemFile(std::filesystem::path pemFile) const{
     }
 
     // Write the certificate to the BIO in PEM format
-    if (::PEM_write_bio_X509(bio.get(), cert_) != 1) {
+    if (::PEM_write_bio_X509(bio.get(), cert_.get()) != 1) {
         fmt::print("Write bio failed while write pem file.\n");
         return Result::FAILURE;
     }
@@ -134,7 +113,7 @@ Result Cert::ToDerFile(std::filesystem::path derFile) const{
     }
 
     // Write the certificate to the BIO in DER format
-    if (::i2d_X509_bio(bio.get(), cert_) != 1) {
+    if (::i2d_X509_bio(bio.get(), cert_.get()) != 1) {
         fmt::print("Write bio failed while write der file.\n");
         return Result::FAILURE;
     }
@@ -156,7 +135,7 @@ Result Cert::ToPemText(std::string& pemText) const{
     }
 
     // Write the certificate to the BIO in PEM format
-    if (::PEM_write_bio_X509(bio.get(), cert_) != 1) {
+    if (::PEM_write_bio_X509(bio.get(), cert_.get()) != 1) {
         fmt::print("Write bio failed while write pem file.\n");
         return Result::FAILURE;
     }
@@ -181,7 +160,7 @@ Result Cert::ToDerText(std::string& derText) const{
         return Result::NULLPTR;
     }
     // Write the certificate to the BIO in DER format
-    if (::i2d_X509_bio(bio.get(), cert_) != 1) {
+    if (::i2d_X509_bio(bio.get(), cert_.get()) != 1) {
         fmt::print("Write bio failed while write der file.\n");
         return Result::FAILURE;
     }

@@ -16,7 +16,6 @@ add_subdirectory(src)
 
 add_library(cryptix SHARED
     $<TARGET_OBJECTS:crypto>
-    $<TARGET_OBJECTS:random>
 )
 target_link_libraries(cryptix PUBLIC
     ${OpenSSL_LIBRARIES}
