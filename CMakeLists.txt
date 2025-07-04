@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include("${CMAKE_CURRENT_BINARY_DIR}/generators/conan_toolchain.cmake")
-
 find_package(OpenSSL REQUIRED)
 find_package(fmt REQUIRED)
 find_package(cpputils REQUIRED) # install from here using conan: https://github.com/quinnwencn/cpputils.git

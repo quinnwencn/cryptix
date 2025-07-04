@@ -1,7 +1,8 @@
 #include "cryptix/random.h"
 
-#include <gtest/gtest.h>
 #include <unordered_set>
+#include <algorithm>
+#include <gtest/gtest.h>
 #include <cpputils/string.h>
 
 using namespace Cryptix;

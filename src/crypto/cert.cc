@@ -84,7 +84,7 @@ Result Cert::ToPemFile(std::filesystem::path pemFile) const{
     }
 
     // Create a BIO object to write the PEM data
-    UniqueBio bio {::BIO_new_file(pemFile.c_str(), "w"), ::BIO_free};
+    UniqueBio bio {::BIO_new_file(pemFile.u8string().c_str(), "w"), ::BIO_free};
     if (!bio) {
         fmt::print("Cannot alloc bio writing pem\n");
         return Result::NULLPTR;
@@ -106,7 +106,7 @@ Result Cert::ToDerFile(std::filesystem::path derFile) const{
     }
 
     // Create a BIO object to write the DER data
-    UniqueBio bio {::BIO_new_file(derFile.c_str(), "w"), ::BIO_free};
+    UniqueBio bio {::BIO_new_file(derFile.u8string().c_str(), "w"), ::BIO_free};
     if (!bio) {
         fmt::print("Cannot alloc bio writing der\n");
         return Result::NULLPTR;

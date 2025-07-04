@@ -22,8 +22,11 @@ public:
     Result ToPemText(std::string& pemText) const;
     Result ToDerText(std::string& derText) const;
 
-    bool IsCA() const { return ::X509_check_ca(cert_.get()) == 1; } // TODO
+    bool IsCA() const { return ::X509_check_ca(cert_.get()) == 1; }
     X509* Get() { return cert_.get(); }
+    UniqueEvpKey PublicKey() const {
+        return UniqueEvpKey(X509_get_pubkey(cert_.get()), EVP_PKEY_free);
+    }
 
 private:
     std::shared_ptr<X509> cert_;
