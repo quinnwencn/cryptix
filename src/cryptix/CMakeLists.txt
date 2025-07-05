@@ -4,6 +4,7 @@ target_include_directories(crypto PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${OpenSSL_INCLUDE_DIRS}
     ${fmt_INCLUDE_DIRS}
+    ${cpputils_INCLUDE_DIRS}
 )
 set_target_properties(crypto PROPERTIES
     POSITION_INDEPENDENT_CODE ON

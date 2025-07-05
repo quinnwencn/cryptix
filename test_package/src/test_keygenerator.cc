@@ -40,13 +40,9 @@ TEST(KeyGenTest, GenerateKeyPairsInFilesystemTest) {
 
 TEST(KeyGenTest, GenerateKeyPairsWithKeySizesTest) {
     // RSA
-    // 1024
     GenerateKeyPairs(KeyStore::Filesystem, RsaKeyParam(RsaKeySize::RSA1024));
-    // 2048
     GenerateKeyPairs(KeyStore::Filesystem, RsaKeyParam(RsaKeySize::RSA2048));
-    // 3072
     GenerateKeyPairs(KeyStore::Filesystem, RsaKeyParam(RsaKeySize::RSA3072));
-    // 4096
     GenerateKeyPairs(KeyStore::Filesystem, RsaKeyParam(RsaKeySize::RSA4096));
 
     // ECC
