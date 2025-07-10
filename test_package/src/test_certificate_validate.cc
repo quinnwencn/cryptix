@@ -1,28 +1,59 @@
 #include "cryptix/cert.h"
-#include "cryptix/trustedca.h"
-#include "cryptix/cert_validator_intf.h"
-#include "cryptix/cert_verifier.h"
-#include "cryptix/single_cert_validator.h"
-#include "cryptix/chain_cert_validator.h"
+#include "cryptix/certificate_validator.h"
+#include "cryptix/error.h"
 
 #include <gtest/gtest.h>
 
 using namespace Cryptix;
 
-TEST(TrustCaTest, ConstructTest) {
-    auto caCert = Cert::FromPemFile(ROOT_PEM);
-    EXPECT_TRUE(caCert.has_value());
-    auto ca = TrustedCa::FromTrustedCACert(caCert.value());
-    EXPECT_TRUE(ca.has_value());
+TEST(CertificateValidatorTest, ConstructTest) {
+	std::string errMsg {"Can't create trusted from given certs"};
+	std::vector<std::vector<uint8_t>> trustedCerts {
+		CertificateValidator::LoadCertificate(END_KEY),
+		CertificateValidator::LoadCertificate(ROOT_PEM)
+	};
 
-    auto intermediateCert = Cert::FromPemFile(INTERMEDIA_CERT);
-    EXPECT_TRUE(intermediateCert.has_value());
-    auto intermediate = TrustedCa::FromTrustedCACert(intermediateCert.value());
-    EXPECT_TRUE(intermediate.has_value());
+	EXPECT_THROW(auto cv = CertificateValidator(trustedCerts), std::runtime_error);
+}
 
-    
-    auto endCert = Cert::FromPemFile(END_CERT);
-    EXPECT_TRUE(endCert.has_value());
-    auto end = TrustedCa::FromTrustedCACert(endCert.value());
-    EXPECT_FALSE(end.has_value());
+TEST(CertificateValidatorTest, ValidateSingleCertifiate) {
+	std::string errMsg {"Can't create trusted from given certs"};
+	std::vector<std::vector<uint8_t>> trustedCerts {
+		CertificateValidator::LoadCertificate(ROOT_PEM),
+		CertificateValidator::LoadCertificate(INTERMEDIA_CERT)
+	};
+
+	auto certValidator = CertificateValidator(trustedCerts);
+	auto endCertOp = Cert::FromPemFile(END_CERT);
+	EXPECT_TRUE(endCertOp.has_value());
+
+	EXPECT_TRUE(certValidator.Validate(endCertOp.value()));
+}
+
+TEST(CertficateValidatorTest, ValidateChainCertificate) {
+	std::vector<std::vector<uint8_t>> trustedCerts {
+		CertificateValidator::LoadCertificate(ROOT_PEM)
+	};
+	auto certValidator = CertificateValidator(trustedCerts);
+
+	std::vector<std::vector<uint8_t>> chainCerts {
+		CertificateValidator::LoadCertificate(INTERMEDIA_CERT),
+		CertificateValidator::LoadCertificate(END_CERT)
+	};
+
+	EXPECT_TRUE(certValidator.Validate(chainCerts));
+}
+
+TEST(CertficateValidatorTest, ValidateInvalidChainCertificate) {
+	std::vector<std::vector<uint8_t>> trustedCerts {
+		CertificateValidator::LoadCertificate(ROOT_PEM)
+	};
+	auto certValidator = CertificateValidator(trustedCerts);
+
+	std::vector<std::vector<uint8_t>> chainCerts {
+		CertificateValidator::LoadCertificate(INTERMEDIA_CERT),
+		CertificateValidator::LoadCertificate(END_KEY)
+	};
+
+	EXPECT_FALSE(certValidator.Validate(chainCerts));
 }

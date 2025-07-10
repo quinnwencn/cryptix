@@ -18,23 +18,23 @@ UniqueEvpKey KeyGenerator::GenerateKeyPairs(const std::string& keyId, const KeyP
 
     auto ctx = UniqueEvpPkeyCtx(::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr), ::EVP_PKEY_CTX_free);
     if (ctx == nullptr) {
-        CRYPTX_ERROR("Allocate Evp pkey ctx failed");
+        CRYPTIX_ERROR("Allocate Evp pkey ctx failed");
         return UniqueEvpKey(nullptr, ::EVP_PKEY_free);
     }
 
     if (::EVP_PKEY_keygen_init(ctx.get()) != 1) {
-        CRYPTX_ERROR("Init keygen ctx failed");
+        CRYPTIX_ERROR("Init keygen ctx failed");
         return UniqueEvpKey(nullptr, ::EVP_PKEY_free);
     }
 
     if (!keyParam.Apply(ctx.get())) {
-        CRYPTX_ERROR("Apply key param failed");
+        CRYPTIX_ERROR("Apply key param failed");
         return UniqueEvpKey(nullptr, ::EVP_PKEY_free);
     }
 
     ::EVP_PKEY* pkey {nullptr};
     if (::EVP_PKEY_keygen(ctx.get(), &pkey) != 1) {
-        CRYPTX_ERROR("Generate key failed");
+        CRYPTIX_ERROR("Generate key failed");
         return UniqueEvpKey(nullptr, ::EVP_PKEY_free);
     }
 
@@ -48,12 +48,12 @@ UniqueEvpKey KeyGenerator::GenerateKeyPairs(const std::string& keyId, const KeyP
     }
 
     if (!SavePublicKey(publicKey, keyPair.get())) {
-        CRYPTX_ERROR("Save pulbic key failed");
+        CRYPTIX_ERROR("Save pulbic key failed");
         return UniqueEvpKey(nullptr, ::EVP_PKEY_free);
     }
 
     if (!SavePrivateKey(privateKey, keyPair.get())) {
-        CRYPTX_ERROR("Save priv key failed");
+        CRYPTIX_ERROR("Save priv key failed");
         return UniqueEvpKey(nullptr, ::EVP_PKEY_free);
     }
     return keyPair;

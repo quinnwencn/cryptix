@@ -25,7 +25,8 @@ private:
     static thread_local std::string lastError_;
 };
 
-#define CRYPTX_ERROR(msg) Cryptix::ErrorContext::SetLastError(__FILE__, __LINE__, msg)
+#define CRYPTIX_ERROR(msg) Cryptix::ErrorContext::SetLastError(__FILE__, __LINE__, msg)
+#define CRYPTIX_ERROR_MSG() ErrorContext::LastError()
 
 }
 

@@ -31,7 +31,7 @@ const std::unordered_map<EccCurve, int> ECC_CURVES {
 
 bool RsaKeyParam::Apply(EVP_PKEY_CTX* ctx) const {
     if (ctx == nullptr) {
-        CRYPTX_ERROR("ctx nullptr");
+        CRYPTIX_ERROR("ctx nullptr");
         return false;
     }
 
@@ -40,12 +40,12 @@ bool RsaKeyParam::Apply(EVP_PKEY_CTX* ctx) const {
 
 bool EccKeyParam::Apply(EVP_PKEY_CTX* ctx) const {
     if (ctx == nullptr) {
-        CRYPTX_ERROR("ctx nullptr");
+        CRYPTIX_ERROR("ctx nullptr");
         return false;
     }
 
     if (ECC_CURVES.find(curve_) == ECC_CURVES.end()) {
-        CRYPTX_ERROR("Unknown curve");
+        CRYPTIX_ERROR("Unknown curve");
         return false;
     }
 

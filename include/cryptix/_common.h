@@ -25,5 +25,7 @@ using UniqueBio = std::unique_ptr<BIO, decltype(&BIO_free)>;
 using UniqueEvpKey = std::unique_ptr<EVP_PKEY, decltype(&EVP_PKEY_free)>;
 using UniqueEvpMdCtx = std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)>;
 using UniqueEvpPkeyCtx = std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)>;
+using UniqueX509Store = std::unique_ptr<X509_STORE, decltype(&X509_STORE_free)>;
+using UniqueX509StoreCtx = std::unique_ptr<X509_STORE_CTX, decltype(&X509_STORE_CTX_free)>;
 
 }

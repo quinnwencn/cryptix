@@ -20,7 +20,7 @@ TEST(ErrorContextTest, SetAndGetLastError) {
 }
 
 TEST(ErrorContextTest, MacroSetsCorrectLocation) {
-    CRYPTX_ERROR("Macro triggered");
+    CRYPTIX_ERROR("Macro triggered");
 
     auto err = Cryptix::ErrorContext::LastError();
     EXPECT_NE(err.find("Macro triggered"), std::string::npos);

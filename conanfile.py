@@ -20,7 +20,7 @@ class Cryptix(ConanFile):
         self.requires("openssl/3.0.8")
         self.requires("gtest/1.13.0")
         self.requires("fmt/10.1.0")
-        self.requires("cpputils/0.5.0")
+        self.requires("cpputils/0.5.1")
 
     def build_requirements(self):
         self.build_requires("cmake/3.26.4")
